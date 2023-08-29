@@ -30,4 +30,7 @@ show grants for 'webdb'@'192.168.0.128';
 ```sh
 mysql -u webdb -D webdb -p;
 mysql -u webdb -D webdb -p;
+
+
+OPT_LOCAL_INFILE=1
 ```
