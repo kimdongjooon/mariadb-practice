@@ -14,14 +14,16 @@ create database webdb;
 create user 'webdb'@'192.168.0.%' identified by 'webdb'; 맥에서 접근가능.
 create user 'webdb'@'192.168.0.128' identified by 'webdb'; 맥에서 접근가능.
 create user 'webdb'@'localhost' identified by 'webdb'; > 리눅스 mysql만 접근가능.
+create user 'hr'@'localhost' identified by 'hr'; > 리눅스 mysql만 접근가능.
 ```
 3. 권한주기.
 ```sh
 webdb의 모든 테이블 접근 권한 주기.
-grant all privileges on webdb.* to 'webdb'@'localhost';
-권한 적용.
+grant all privileges on employees.* to 'hr'@'localhost';
+grant all privileges on webdb.* to 'webdb'@'localhost'
 flush privileges;
-```
+
+`
 
 4. 확인.
 SET PASSWORD FOR 'webdb'@'localhost' = PASSWORD('1234qwer');
