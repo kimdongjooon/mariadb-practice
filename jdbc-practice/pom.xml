@@ -20,6 +20,11 @@
 			<version>0.1.54</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.poscodx</groupId>
+			<artifactId>chapter03</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<properties>
