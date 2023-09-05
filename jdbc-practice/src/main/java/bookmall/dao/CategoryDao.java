@@ -8,11 +8,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import bookmall.vo.MemberVo;
+import bookmall.vo.CategoryVo;
 
-public class MemberDao {
 
-	public static boolean insert(MemberVo vo) {
+
+public class CategoryDao {
+
+	public boolean insert(CategoryVo vo) {
 		boolean result = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -29,15 +31,12 @@ public class MemberDao {
 			
 			String sql =
 					"insert" +
-				    " into member" +
-					" values (null, ?,?,?,?)";
+				    " into category" +
+					" values (null, ?)";
 			pstmt = conn.prepareStatement(sql);
 			
 			//4. 값 바인딩.
-			pstmt.setString(1, vo.getName());
-			pstmt.setString(2, vo.getEmail());
-			pstmt.setString(3, vo.getPassword());
-			pstmt.setString(4, vo.getTel());
+			pstmt.setString(1, vo.getCategory());
 			
 			//5. SQL 실행.
 			int count = pstmt.executeUpdate();
@@ -66,12 +65,12 @@ public class MemberDao {
 		return result;
 		
 	}
-
+	
 	public void findAll() {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		List<MemberVo> result = new ArrayList<>(); 
+		List<CategoryVo> result = new ArrayList<>(); 
 		
 		try {
 			//1. JDBC Driver Class 로딩
@@ -83,24 +82,19 @@ public class MemberDao {
 
 			//3. SQL 준비
 			String sql =
-				"select * from member ";
+				"select * from category ";
 			pstmt = conn.prepareStatement(sql);
 			
 			//4. binding
-//			pstmt.setString(1, "%" + keyword + "%");
-//			pstmt.setString(2, "%" + keyword + "%");
 			
 			//5. SQL 실행
 			rs = pstmt.executeQuery();
 			
-			MemberVo vo = new MemberVo();
+			CategoryVo vo = new CategoryVo();
 			//6. 결과 처리
 			while(rs.next()) {
 				vo.setNo(rs.getInt(1));
-				vo.setName(rs.getString(2));
-				vo.setEmail(rs.getString(3));
-				vo.setPassword(rs.getString(4));
-				vo.setTel(rs.getString(5));
+				vo.setCategory(rs.getString(2));
 				
 				System.out.println(vo.toString());
 			}
@@ -124,7 +118,13 @@ public class MemberDao {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}		
+		}
 		
 	}
+
+	
+	
+	
+	
+
 }
