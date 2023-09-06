@@ -99,15 +99,22 @@ from cart a, book b
 where a.book_no = b.no
 and a.member_no = 0;
 
-select * from orders;
+select no,name,total_price,email,address 
+from orders;
 
 
 -- 최종 findall sql문 
-select a.no, b.name, a.total_price, b.email, a.address 
-from orders a, member b, cart c
+select * -- a.no, b.name, a.total_price, b.email, a.address, c.book_no
+from orders a, member b, cart c, book d
 where a.member_no = b.no
 and b.no = c.member_no
+and c.book_no = d.no
 
 ;
 
 select * from orders;
+
+--
+-- order book
+-- 
+select * from order_book;

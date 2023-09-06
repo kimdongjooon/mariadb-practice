@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bookmall.vo.CartVo;
+import bookmall.vo.OrderBookVo;
 import bookmall.vo.OrderVo;
 
 public class OrderDao {
@@ -26,6 +27,7 @@ public class OrderDao {
 		String name = null;
 		String email = null;
 		int total_price = 0;
+		List<OrderBookVo> result = new ArrayList<>();
 		
 		try {
 			//1. JDBC Driver Class 로딩
@@ -80,16 +82,16 @@ public class OrderDao {
 				
 			}
 			System.out.println("총액: "+total_price);
+			
 			pstmt.close();
 			rs.close();
 			
-			
-			// 3-3. SQL 준비(insert 하기)
-			String sql =
+			// 3-3. SQL 준비(orders insert 하기)
+			String sql3 =
 					"insert into orders values(null,?,?,?,?,?)";
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql3);
 			
-			//4. 값 바인딩.
+			//4-3. 값 바인딩.
 			pstmt.setInt(1, total_price);
 			pstmt.setInt(2, vo.getMember_no());
 			pstmt.setString(3, name);
@@ -97,11 +99,66 @@ public class OrderDao {
 			pstmt.setString(5, vo.getAddress());
 			
 			
-			//5. SQL 실행.
+			//5-3. SQL 실행.(order book)
 			int count = pstmt.executeUpdate();
 			
-			//6. 결과 실행 
+			//6-3. 결과 실행 
 			System.out.println("orderUpate: "+ (count == 1));
+			
+			pstmt.close();
+			rs.close();
+			
+			//3-4. SQL 준비(quntity, price 가져와서 변수 저장하기)
+			String sql4 =
+				"select a.no, d.no, c.quntity, d.price "+
+				"from orders a, member b, cart c, book d "+
+				"where a.member_no = b.no"+
+				"and b.no = c.member_no "+
+				"and c.book_no = d.no "+
+				"and a.member_no = ?";
+			pstmt = conn.prepareStatement(sql4);
+			
+			//4-4. binding
+			pstmt.setInt(1, vo.getMember_no());
+			
+			//5-4. SQL 실행
+			rs = pstmt.executeQuery();
+			
+			
+			//6-4. 결과 처리
+			while(rs.next()) {
+				OrderBookVo obvo =new OrderBookVo();
+				obvo.setOrder_no(rs.getInt(1));
+				obvo.setBook_no(rs.getInt(2));
+				obvo.setQuntity(rs.getInt(3));
+				obvo.setPrice(rs.getInt(4));
+				
+				result.add(obvo);
+				
+			}
+			
+			pstmt.close();
+			rs.close();
+			
+			// 3-5. SQL 준비(orders insert 하기)
+			String sql5 =
+					"insert into order_book values(?,?,?,?)";
+			pstmt = conn.prepareStatement(sql5);
+			
+			// for each문으로 한꺼번에 다 넣기.
+			//4-5. 값 바인딩.
+			pstmt.setInt(1, total_price);
+			pstmt.setInt(2, vo.getMember_no());
+			pstmt.setString(3, name);
+			pstmt.setString(4, email);
+			pstmt.setString(5, vo.getAddress());
+			
+			
+			//5-5. SQL 실행.(order book)
+			int count5 = pstmt.executeUpdate();
+			
+			//6-5. 결과 실행 
+			System.out.println("orderBookUpate: "+ (count5 == 1));
 			
 			
 		} catch (ClassNotFoundException e) {
@@ -130,8 +187,70 @@ public class OrderDao {
 	
 	// findall : order 테이블(주문번호, 주문자번호(주문자 이름), 주문 도서 총액, 주문자 email, 주문자 주소
 	//                       자동         member             cart         member     입력. 
-	public void findAll() {
-		// TODO Auto-generated method stub
+	public List<OrderVo> findAll() {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<OrderVo> result = new ArrayList<>(); 
+		
+		try {
+			//1. JDBC Driver Class 로딩
+			Class.forName("org.mariadb.jdbc.Driver");
+			
+			//2. 연결하기
+			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
+			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
+
+			//3. SQL 준비
+			String sql =
+				"select no,name,total_price,email,address "+
+				"from orders";
+			pstmt = conn.prepareStatement(sql);
+			
+			//4. binding
+//			pstmt.setString(1, "%" + keyword + "%");
+//			pstmt.setString(2, "%" + keyword + "%");
+			
+			//5. SQL 실행
+			rs = pstmt.executeQuery();
+			
+			
+			//6. 결과 처리
+			while(rs.next()) {
+				OrderVo vo = new OrderVo();
+				vo.setNo(rs.getInt(1));
+				vo.setName(rs.getString(2));
+				vo.setTotal_price(rs.getInt(3));
+				vo.setEmail(rs.getString(4));
+				vo.setAddress(rs.getString(5));
+				
+				result.add(vo);
+			}
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println("드라이버 로딩 실패:" + e);
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		} finally {
+			try {
+				// 6. 자원정리
+				if(rs != null) {
+					rs.close();
+				}
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		return result;
 		
 	}
 

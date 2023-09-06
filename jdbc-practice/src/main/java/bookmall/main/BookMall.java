@@ -6,7 +6,9 @@ import bookmall.dao.BookDao;
 import bookmall.dao.CartDao;
 import bookmall.dao.CategoryDao;
 import bookmall.dao.MemberDao;
+import bookmall.dao.OrderDao;
 import bookmall.vo.CartVo;
+import bookmall.vo.OrderVo;
 
 public class BookMall {
 
@@ -27,12 +29,16 @@ public class BookMall {
 		new BookDao().findAll();
 		
 		System.out.println("## 카트");
-		List<CartVo> list = new CartDao().findAll();
-		for(CartVo vo : list) {
+		List<CartVo> cart_list = new CartDao().findAll();
+		for(CartVo vo : cart_list) {
 			System.out.println(vo);
 		}
 		
 		System.out.println("## 주문");
+		List<OrderVo> orders_list = new OrderDao().findAll();
+		for(OrderVo vo : orders_list) {
+			System.out.println(vo);
+		}
 		
 		System.out.println("## 주문도서");
 
