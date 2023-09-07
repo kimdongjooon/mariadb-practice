@@ -1,16 +1,23 @@
 use bookmall;
-ALTER TABLE book AUTO_INCREMENT = 0;
-ALTER TABLE cart AUTO_INCREMENT = 0;
-ALTER TABLE category AUTO_INCREMENT = 0;
-ALTER TABLE member AUTO_INCREMENT = 0;
-ALTER TABLE orders AUTO_INCREMENT = 0;
-ALTER TABLE order_book AUTO_INCREMENT = 0;
+ALTER TABLE book AUTO_INCREMENT = 1;
+ALTER TABLE cart AUTO_INCREMENT = 1;
+ALTER TABLE category AUTO_INCREMENT = 1;
+ALTER TABLE member AUTO_INCREMENT = 1;
+ALTER TABLE orders AUTO_INCREMENT = 1;
+ALTER TABLE order_book AUTO_INCREMENT = 1;
+SELECT * FROM category;
+SELECT * FROM book;
+SELECT * FROM cart;
+SELECT * FROM member;
+SELECT * FROM orders;
+SELECT * FROM order_book;
+
 --
 -- CATEGORY
 --
 SELECT * FROM category;
-ALTER TABLE category AUTO_INCREMENT = 6;
-DELETE FROM category WHERE no =7;
+ALTER TABLE category AUTO_INCREMENT = 1;
+DELETE FROM category WHERE no <=30;
 
 insert into category values(null,'소설');
 insert into category values(null,'수필');
@@ -69,6 +76,7 @@ ALTER TABLE cart AUTO_INCREMENT = 0;
 DELETE FROM cart WHERE no <=10;
 select * from cart;
 -- insert into cart values(null,vo.quntity,vo.no,vo.member_no)
+insert into cart values(null,3,1,1);
 -- findall : 책 고유번호, 종류, 책이름, 가격, 수량, 총가격.
 select b.no, c.category, a.title, a.price, b.quntity, (a.price*b.quntity)
 from book a, cart b, category c
@@ -139,4 +147,12 @@ select *
 from orders a, cart b, book c
 where a.member_no = b.member_no
 and b.book_no = c.no
+;
 
+-- 주문 번호, 주문자 이름, 책 제목, 개당가격, 수량, 각합.
+select b.no, b.name, c.title, a.price, a.quntity,  (a.price*a.quntity) as "총 가격"
+from order_book a, orders b, book c
+where a.order_no = b.no
+and a.book_no = c.no
+and b.member_no = 1;
+;

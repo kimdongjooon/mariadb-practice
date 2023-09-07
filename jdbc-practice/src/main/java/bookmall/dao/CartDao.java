@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bookmall.vo.CartVo;
+import bookmall.vo.MemberVo;
 
 public class CartDao {
 
@@ -27,7 +28,11 @@ public class CartDao {
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
 
-			//3. sql준비.
+			
+			//3-1.멤버 이름 받아서 no 뽑아서 가져와서 변수 저장하기
+//			-- 해야됨!!
+			
+			//3-2. sql준비.
 			
 			String sql =
 					"insert into cart values(null,?,?,?)";
@@ -35,7 +40,7 @@ public class CartDao {
 			
 			//4. 값 바인딩.
 			pstmt.setInt(1, vo.getQuntity());
-			pstmt.setInt(2, vo.getNo());
+			pstmt.setInt(2, vo.getBookNo());
 			pstmt.setInt(3, vo.getMember_no());
 			
 			
@@ -66,8 +71,6 @@ public class CartDao {
 	}
 
 	
-
-	
 	// 카트에서 책 삭제 하기 (no 기반으로 입력시 해당 행 삭제 delete)
 	public void delete(int no) {
 		
@@ -77,7 +80,7 @@ public class CartDao {
 	
 	
 	// 카트 정보 불러오기 ( 도서제목, 수량, 가격 select)
-	public List<CartVo> findAll() {
+	public List<CartVo> findAll(MemberVo mvo) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -96,12 +99,13 @@ public class CartDao {
 				"select b.no, c.category, a.title, a.price, b.quntity, (a.price*b.quntity) "+
 				"from book a, cart b, category c "+
 				"where a.no = b.book_no "+
-				"and a.category_no = c.no ";
+				"and a.category_no = c.no "+
+				"and b.member_no = ?";
 			pstmt = conn.prepareStatement(sql);
 			
 			//4. binding
-//			pstmt.setString(1, "%" + keyword + "%");
-//			pstmt.setString(2, "%" + keyword + "%");
+			pstmt.setInt(1, mvo.getNo());
+
 			
 			//5. SQL 실행
 			rs = pstmt.executeQuery();

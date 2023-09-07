@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bookmall.vo.CartVo;
+import bookmall.vo.MemberVo;
 import bookmall.vo.OrderBookVo;
 import bookmall.vo.OrderVo;
 
@@ -28,7 +29,7 @@ public class OrderDao {
 		String email = null;
 		int total_price = 0;
 		List<OrderBookVo> result = new ArrayList<>();
-		System.out.println("----1---");
+
 		try {
 			//1. JDBC Driver Class 로딩
 			Class.forName("org.mariadb.jdbc.Driver");
@@ -57,7 +58,7 @@ public class OrderDao {
 				email = rs.getString(2);
 				
 			}
-			System.out.println("----2---");
+
 			pstmt.close();
 			rs.close();
 			
@@ -82,7 +83,6 @@ public class OrderDao {
 				
 			}
 			
-			System.out.println("----3---");
 			pstmt.close();
 			rs.close();
 			
@@ -99,7 +99,7 @@ public class OrderDao {
 			pstmt.setString(5, vo.getAddress());
 			
 			
-			//5-3. SQL 실행.(order book)
+			//5-3. SQL 실행.(order)
 			int count = pstmt.executeUpdate();
 			
 			//6-3. 결과 실행 
@@ -107,7 +107,6 @@ public class OrderDao {
 				System.out.println(name+"님 주문완료.") ;
 			}
 			
-			System.out.println("----4---");
 			pstmt.close();
 			rs.close();
 			
@@ -115,7 +114,7 @@ public class OrderDao {
 			String sql4 =
 				"select a.no, d.no, c.quntity, d.price "+
 				"from orders a, member b, cart c, book d "+
-				"where a.member_no = b.no"+
+				"where a.member_no = b.no "+
 				"and b.no = c.member_no "+
 				"and c.book_no = d.no "+
 				"and a.member_no = ?";
@@ -139,7 +138,6 @@ public class OrderDao {
 				result.add(obvo);
 				
 			}
-			System.out.println("----5---");
 			pstmt.close();
 			rs.close();
 			
@@ -190,7 +188,7 @@ public class OrderDao {
 	
 	// findall : order 테이블(주문번호, 주문자번호(주문자 이름), 주문 도서 총액, 주문자 email, 주문자 주소
 	//                       자동         member             cart         member     입력. 
-	public List<OrderVo> findAll() {
+	public List<OrderVo> findAll(MemberVo mvo) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -207,11 +205,12 @@ public class OrderDao {
 			//3. SQL 준비
 			String sql =
 				"select no,name,total_price,email,address "+
-				"from orders";
+				"from orders " +
+				"where member_no = ?";
 			pstmt = conn.prepareStatement(sql);
 			
 			//4. binding
-//			pstmt.setString(1, "%" + keyword + "%");
+			pstmt.setInt(1,mvo.getNo());
 
 			//5. SQL 실행
 			rs = pstmt.executeQuery();
@@ -259,7 +258,7 @@ public class OrderDao {
 	
 	
 	// orderBookFindAll : order_book 테이블(주문 번호, 책고유 번호(책이름), 가격 , 수량, 총가격.
-	public List<OrderBookVo> orderBookFindAll() {
+	public List<OrderBookVo> orderBookFindAll(MemberVo mvo) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -275,28 +274,30 @@ public class OrderDao {
 
 			//3. SQL 준비
 			String sql =
-				"select a.no, c.title, c.price, b.quntity, (c.price*b.quntity) "+
+				"select a.no, c.title, c.price, b.quntity, (c.price*b.quntity), a.name "+
 				"from orders a, cart b, book c " +
-				"where a.member_no = b.member_no  " +
-				"and b.book_no = c.no";
+				"where a.member_no = b.member_no " +
+				"and b.book_no = c.no "+
+				"and a.member_no = ?";
 			pstmt = conn.prepareStatement(sql);
 			
 			//4. binding
-//			pstmt.setString(1, "%" + keyword + "%");
+			pstmt.setInt(1,mvo.getNo());
 
 			//5. SQL 실행
 			rs = pstmt.executeQuery();
 			
 			//6. 결과 처리
 			while(rs.next()) {
-				OrderBookVo vo = new OrderBookVo();
-				vo.setOrder_no(rs.getInt(1));
-				vo.setBookName(rs.getString(2));
-				vo.setPrice(rs.getInt(3));
-				vo.setQuntity(rs.getInt(4));
-				vo.setPrice_mul_quntity(rs.getInt(5));
+				OrderBookVo obvo = new OrderBookVo();
+				obvo.setOrder_no(rs.getInt(1));
+				obvo.setBookName(rs.getString(2));
+				obvo.setPrice(rs.getInt(3));
+				obvo.setQuntity(rs.getInt(4));
+				obvo.setPrice_mul_quntity(rs.getInt(5));
+				obvo.setMemberName(rs.getString(6));
 				
-				result.add(vo);
+				result.add(obvo);
 			}
 			
 		} catch (ClassNotFoundException e) {

@@ -1,7 +1,8 @@
 package bookmall.vo;
 
 public class CartVo {
-	private int no; // book_no
+	private int no;
+	private int bookNo;
 	private String category;
 	private String title;
 	private int quntity;
@@ -10,12 +11,18 @@ public class CartVo {
 	private int member_no;
 	
 	public CartVo() {}
-	public CartVo(int no, int quntity, int member_no) {
-		this.no = no;
+	public CartVo(int bookNo, int quntity, MemberVo mvo) {
+		this.bookNo = bookNo;
 		this.quntity = quntity;
-		this.member_no = member_no;
+		this.member_no = mvo.getNo();
 	}
 	
+	public int getBookNo() {
+		return bookNo;
+	}
+	public void setBookNo(int bookNo) {
+		this.bookNo = bookNo;
+	}
 	public int getTotal_price() {
 		return total_price;
 	}

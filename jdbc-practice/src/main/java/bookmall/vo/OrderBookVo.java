@@ -9,8 +9,15 @@ public class OrderBookVo {
 	// order_book 테이블(주문 번호, 책고유 번호(책이름), 가격 , 수량, 총가격).
 	private String bookName;
 	private int price_mul_quntity;
+	private String memberName;
 	
 	
+	public String getMemberName() {
+		return memberName;
+	}
+	public void setMemberName(String memberName) {
+		this.memberName = memberName;
+	}
 	public String getBookName() {
 		return bookName;
 	}
@@ -50,6 +57,7 @@ public class OrderBookVo {
 	@Override
 	public String toString() {
 		return "| 주문번호: " + order_no + 
+				", 주문자: " + memberName +
 				", 책 제목: " + bookName + 
 				", 수량: " + quntity +
 				", (개당)가격: " + price + 
