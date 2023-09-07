@@ -9,14 +9,24 @@ public class OrderDaoTest {
 	public static void main(String[] args) {
 		
 		OrderVo vo = new OrderVo(1,"강북 미아동");
-//		OrderBookVo bvo = new  OrderBookVo();
+		OrderBookVo obvo = new  OrderBookVo();
 		testOrderInsert(vo);
-//		testOrderFindAll();
+		testOrderFindAll();
+		testOrderBookFindAll();
+		
+	}
+
+	private static void testOrderBookFindAll() {
+		for(OrderBookVo vo : new OrderDao().orderBookFindAll()) {
+			System.out.println(vo);
+		}
 		
 	}
 
 	private static void testOrderFindAll() {
-		new OrderDao().findAll();
+		for(OrderVo vo : new OrderDao().findAll()) {
+			System.out.println(vo);
+		}
 		
 	}
 

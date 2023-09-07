@@ -28,7 +28,7 @@ public class OrderDao {
 		String email = null;
 		int total_price = 0;
 		List<OrderBookVo> result = new ArrayList<>();
-		
+		System.out.println("----1---");
 		try {
 			//1. JDBC Driver Class 로딩
 			Class.forName("org.mariadb.jdbc.Driver");
@@ -55,9 +55,9 @@ public class OrderDao {
 			while(rs.next()) {
 				name = rs.getString(1);
 				email = rs.getString(2);
-				System.out.println(name+":"+email);
+				
 			}
-			
+			System.out.println("----2---");
 			pstmt.close();
 			rs.close();
 			
@@ -81,8 +81,8 @@ public class OrderDao {
 				total_price += rs.getInt(1)*rs.getInt(2);
 				
 			}
-			System.out.println("총액: "+total_price);
 			
+			System.out.println("----3---");
 			pstmt.close();
 			rs.close();
 			
@@ -103,8 +103,11 @@ public class OrderDao {
 			int count = pstmt.executeUpdate();
 			
 			//6-3. 결과 실행 
-			System.out.println("orderUpate: "+ (count == 1));
+			if(count == 1){
+				System.out.println(name+"님 주문완료.") ;
+			}
 			
+			System.out.println("----4---");
 			pstmt.close();
 			rs.close();
 			
@@ -136,30 +139,30 @@ public class OrderDao {
 				result.add(obvo);
 				
 			}
-			
+			System.out.println("----5---");
 			pstmt.close();
 			rs.close();
 			
-			// 3-5. SQL 준비(orders insert 하기)
+			// 3-5. SQL 준비(orders_book insert 하기)
 			String sql5 =
 					"insert into order_book values(?,?,?,?)";
 			pstmt = conn.prepareStatement(sql5);
-			
+			int count5;
 			// for each문으로 한꺼번에 다 넣기.
-			//4-5. 값 바인딩.
-			pstmt.setInt(1, total_price);
-			pstmt.setInt(2, vo.getMember_no());
-			pstmt.setString(3, name);
-			pstmt.setString(4, email);
-			pstmt.setString(5, vo.getAddress());
+			for(OrderBookVo obvo : result) {
+				//4-5. 값 바인딩.
+				count5 = 0;
+				pstmt.setInt(1, obvo.getBook_no());
+				pstmt.setInt(2, obvo.getOrder_no());
+				pstmt.setInt(3, obvo.getQuntity());
+				pstmt.setInt(4, obvo.getPrice());
 			
-			
-			//5-5. SQL 실행.(order book)
-			int count5 = pstmt.executeUpdate();
-			
-			//6-5. 결과 실행 
-			System.out.println("orderBookUpate: "+ (count5 == 1));
-			
+				//5-5. SQL 실행.(order book)
+				count5 = pstmt.executeUpdate();
+				
+				//6-5. 결과 실행 
+				System.out.println("orderBookUpate: "+ (count5 == 1));
+			}
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패:" + e);
@@ -209,11 +212,9 @@ public class OrderDao {
 			
 			//4. binding
 //			pstmt.setString(1, "%" + keyword + "%");
-//			pstmt.setString(2, "%" + keyword + "%");
-			
+
 			//5. SQL 실행
 			rs = pstmt.executeQuery();
-			
 			
 			//6. 결과 처리
 			while(rs.next()) {
@@ -257,7 +258,72 @@ public class OrderDao {
 	
 	
 	
-	// findall : order_book 테이블(주문 번호, 책고유 번호(책이름), 가격 , 수량, 총가격.
-	
+	// orderBookFindAll : order_book 테이블(주문 번호, 책고유 번호(책이름), 가격 , 수량, 총가격.
+	public List<OrderBookVo> orderBookFindAll() {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<OrderBookVo> result = new ArrayList<>(); 
+		
+		try {
+			//1. JDBC Driver Class 로딩
+			Class.forName("org.mariadb.jdbc.Driver");
+			
+			//2. 연결하기
+			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
+			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
+
+			//3. SQL 준비
+			String sql =
+				"select a.no, c.title, c.price, b.quntity, (c.price*b.quntity) "+
+				"from orders a, cart b, book c " +
+				"where a.member_no = b.member_no  " +
+				"and b.book_no = c.no";
+			pstmt = conn.prepareStatement(sql);
+			
+			//4. binding
+//			pstmt.setString(1, "%" + keyword + "%");
+
+			//5. SQL 실행
+			rs = pstmt.executeQuery();
+			
+			//6. 결과 처리
+			while(rs.next()) {
+				OrderBookVo vo = new OrderBookVo();
+				vo.setOrder_no(rs.getInt(1));
+				vo.setBookName(rs.getString(2));
+				vo.setPrice(rs.getInt(3));
+				vo.setQuntity(rs.getInt(4));
+				vo.setPrice_mul_quntity(rs.getInt(5));
+				
+				result.add(vo);
+			}
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println("드라이버 로딩 실패:" + e);
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		} finally {
+			try {
+				// 6. 자원정리
+				if(rs != null) {
+					rs.close();
+				}
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		return result;
+		
+	}
 	// 
 }

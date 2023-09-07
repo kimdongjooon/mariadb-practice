@@ -18,8 +18,7 @@ public class MemberDaoTest {
 	}
 
 	private static void testMemberInsert(MemberVo vo) {
-		boolean result = new MemberDao().insert(vo);
-		System.out.println(result);
+		new MemberDao().insert(vo);
 		
 	}
 

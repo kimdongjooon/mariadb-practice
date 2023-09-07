@@ -8,11 +8,14 @@ public class OrderVo {
 	private String email;
 	private String address; // 주소 입력 받기. 그외에는 DB에서 찾아서 넣기.
 	
+	
+	
 	public OrderVo() {}
 	public OrderVo(int member_no, String address) {
 		this.member_no = member_no;
 		this.address = address;
 	}
+	
 	
 	public int getNo() {
 		return no;

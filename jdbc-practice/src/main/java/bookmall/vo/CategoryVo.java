@@ -6,6 +6,10 @@ public class CategoryVo {
 	public int getNo() {
 		return no;
 	}
+	public CategoryVo() {}
+	public CategoryVo(String category) {
+		this.category = category;
+	}
 	
 	public void setNo(int no) {
 		this.no = no;

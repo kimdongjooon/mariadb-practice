@@ -28,7 +28,6 @@ public class CartDao {
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
 
 			//3. sql준비.
-			// select하여 member_no찾기.
 			
 			String sql =
 					"insert into cart values(null,?,?,?)";

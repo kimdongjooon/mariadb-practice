@@ -1,15 +1,12 @@
 use bookmall;
-ALTER TABLE book AUTO_INCREMENT = 0;
-ALTER TABLE cart AUTO_INCREMENT = 0;
-ALTER TABLE category AUTO_INCREMENT = 0;
-ALTER TABLE member AUTO_INCREMENT = 0;
-ALTER TABLE orders AUTO_INCREMENT = 0;
-ALTER TABLE order_book AUTO_INCREMENT = 0;
+-- 전체 초기화
 --
 -- CATEGORY
 --
+
+
 SELECT * FROM category;
-ALTER TABLE category AUTO_INCREMENT = 6;
+
 DELETE FROM category WHERE no =7;
 
 insert into category values(null,'소설');
@@ -124,6 +121,8 @@ select * from orders;
 -- 
 -- insert 용 데이터 select 
 -- order_no, book_no, quntity, price를 가져오기
+ALTER TABLE orders AUTO_INCREMENT = 0;
+DELETE FROM orders WHERE no <=10;
 select * from order_book;
 select a.no, d.no, c.quntity, d.price
 from orders a, member b, cart c, book d
@@ -135,8 +134,10 @@ and a.member_no = 1
 
 -- orderbookfindall
 -- (주문 번호, 책고유 번호(책이름), 가격 , 수량, 총가격)
-select * 
+select a.no, c.title, c.price, b.quntity, (c.price*b.quntity)
 from orders a, cart b, book c
 where a.member_no = b.member_no
 and b.book_no = c.no
+and a.member_no = 1
+;
 

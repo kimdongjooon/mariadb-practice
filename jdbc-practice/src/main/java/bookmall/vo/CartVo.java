@@ -1,7 +1,7 @@
 package bookmall.vo;
 
 public class CartVo {
-	private int no;
+	private int no; // book_no
 	private String category;
 	private String title;
 	private int quntity;
