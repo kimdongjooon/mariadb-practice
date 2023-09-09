@@ -11,7 +11,7 @@ import java.util.List;
 import bookmall.vo.MemberVo;
 
 public class MemberDao {
-
+// void 
 	public static void insert(MemberVo vo) {
 		boolean result = false;
 		Connection conn = null;
@@ -43,9 +43,7 @@ public class MemberDao {
 			int count = pstmt.executeUpdate();
 			
 			//6. 결과 처리.
-			if(result = count == 1) {
-				System.out.println(vo.getName()+"님 회원가입완료.");
-			};
+//			if(result = count == 1) {System.out.println(vo.getName()+"님 회원가입완료.");};
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패:" + e);

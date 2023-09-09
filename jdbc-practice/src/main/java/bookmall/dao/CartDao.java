@@ -19,6 +19,7 @@ public class CartDao {
 	public void insert(CartVo vo) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		
 		try {
 			//1. JDBC Driver Class 로딩
@@ -29,14 +30,23 @@ public class CartDao {
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
 
 			
-			//3-1.멤버 이름 받아서 no 뽑아서 가져와서 변수 저장하기
-//			-- 해야됨!!
-			
+			//3-1.멤버 email 받아서 no 뽑아서 가져와서 변수 저장하기
+			String sql1=
+					"select no from member where email = ?";
+			pstmt = conn.prepareStatement(sql1);
+			pstmt.setString(1,vo.getEmail());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				vo.setMember_no(rs.getInt(1));
+			}
+			pstmt.close();
+			rs.close();
 			//3-2. sql준비.
 			
-			String sql =
+			String sql2 =
 					"insert into cart values(null,?,?,?)";
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql2);
+			
 			
 			//4. 값 바인딩.
 			pstmt.setInt(1, vo.getQuntity());
@@ -93,15 +103,28 @@ public class CartDao {
 			//2. 연결하기
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
-
+			
+			//3-1.멤버 email 받아서 no 뽑아서 가져와서 변수 저장하기
+			String sql1=
+					"select no from member where email = ?";
+			pstmt = conn.prepareStatement(sql1);
+			
+			pstmt.setString(1,mvo.getEmail());
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				mvo.setNo(rs.getInt(1));
+			}
+			pstmt.close();
+			rs.close();
 			//3. SQL 준비
-			String sql =
+			String sql2 =
 				"select b.no, c.category, a.title, a.price, b.quntity, (a.price*b.quntity) "+
 				"from book a, cart b, category c "+
 				"where a.no = b.book_no "+
 				"and a.category_no = c.no "+
 				"and b.member_no = ?";
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql2);
 			
 			//4. binding
 			pstmt.setInt(1, mvo.getNo());

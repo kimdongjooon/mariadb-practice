@@ -37,7 +37,21 @@ public class OrderDao {
 			//2. 연결하기
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
-
+			
+			//3-1.멤버 email 받아서 no 뽑아서 가져와서 변수 저장하기
+			String sql0=
+					"select no from member where email = ?";
+			pstmt = conn.prepareStatement(sql0);
+			
+			pstmt.setString(1,vo.getEmail());
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				vo.setMember_no(rs.getInt(1));;
+			}
+			pstmt.close();
+			rs.close();
+			
 			//3-1. SQL 준비(name, email 가져와서 변수 저장하기)
 			String sql1 =
 				"select name, email " +
@@ -100,12 +114,10 @@ public class OrderDao {
 			
 			
 			//5-3. SQL 실행.(order)
-			int count = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			
 			//6-3. 결과 실행 
-			if(count == 1){
-				System.out.println(name+"님 주문완료.") ;
-			}
+//			if(count == 1){System.out.println(name+"님 주문완료.") ;}
 			
 			pstmt.close();
 			rs.close();
@@ -159,7 +171,7 @@ public class OrderDao {
 				count5 = pstmt.executeUpdate();
 				
 				//6-5. 결과 실행 
-				System.out.println("orderBookUpate: "+ (count5 == 1));
+//				System.out.println("orderBookUpate: "+ (count5 == 1));
 			}
 			
 		} catch (ClassNotFoundException e) {
@@ -201,13 +213,27 @@ public class OrderDao {
 			//2. 연결하기
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
-
+			
+			//3-1.멤버 email 받아서 no 뽑아서 가져와서 변수 저장하기
+			String sql1=
+					"select no from member where email = ?";
+			pstmt = conn.prepareStatement(sql1);
+			
+			pstmt.setString(1,mvo.getEmail());
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				mvo.setNo(rs.getInt(1));
+			}
+			pstmt.close();
+			rs.close();
+			
 			//3. SQL 준비
-			String sql =
+			String sql2 =
 				"select no,name,total_price,email,address "+
 				"from orders " +
 				"where member_no = ?";
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql2);
 			
 			//4. binding
 			pstmt.setInt(1,mvo.getNo());
@@ -272,14 +298,28 @@ public class OrderDao {
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
 
+			//3-1.멤버 email 받아서 no 뽑아서 가져와서 변수 저장하기
+			String sql1=
+					"select no from member where email = ?";
+			pstmt = conn.prepareStatement(sql1);
+			
+			pstmt.setString(1,mvo.getEmail());
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				mvo.setNo(rs.getInt(1));
+			}
+			pstmt.close();
+			rs.close();
+			
 			//3. SQL 준비
-			String sql =
+			String sql2 =
 				"select a.no, c.title, c.price, b.quntity, (c.price*b.quntity), a.name "+
 				"from orders a, cart b, book c " +
 				"where a.member_no = b.member_no " +
 				"and b.book_no = c.no "+
 				"and a.member_no = ?";
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql2);
 			
 			//4. binding
 			pstmt.setInt(1,mvo.getNo());

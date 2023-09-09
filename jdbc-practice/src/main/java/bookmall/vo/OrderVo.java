@@ -11,8 +11,8 @@ public class OrderVo {
 	
 	
 	public OrderVo() {}
-	public OrderVo(int member_no, String address) {
-		this.member_no = member_no;
+	public OrderVo(MemberVo mvo, String address) {
+		this.email = mvo.getEmail();
 		this.address = address;
 	}
 	

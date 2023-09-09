@@ -9,12 +9,20 @@ public class CartVo {
 	private int price;
 	private int total_price;
 	private int member_no;
+	private String email;
 	
 	public CartVo() {}
 	public CartVo(int bookNo, int quntity, MemberVo mvo) {
 		this.bookNo = bookNo;
 		this.quntity = quntity;
 		this.member_no = mvo.getNo();
+		this.email = mvo.getEmail();
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	public int getBookNo() {

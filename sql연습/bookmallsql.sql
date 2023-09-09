@@ -83,6 +83,10 @@ from book a, cart b, category c
 where a.no = b.book_no
 and a.category_no = c.no
 ;
+-- select 
+select no
+from member
+where email = 'hong@google.com';
 
 
 -- 
