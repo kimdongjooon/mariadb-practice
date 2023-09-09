@@ -18,6 +18,7 @@ public class OrderDao {
 	
 	// cart에서 결제할 도서 목록들을 합을 order테이블에 insert 일단 하나씩.
 	// 동시에 세부 결제사항을 order book에 insert
+	// 주문 완료시 cart 주문내역 삭제하기.
 	public void insert(OrderVo vo) {
 		// vo의 member_no을 기반으로 select해서 
 		// member 테이블에서 이름과 이메일을 가져오고
@@ -155,24 +156,32 @@ public class OrderDao {
 			
 			// 3-5. SQL 준비(orders_book insert 하기)
 			String sql5 =
-					"insert into order_book values(?,?,?,?)";
+					"insert into order_book values(?,?,?,?,null)";
 			pstmt = conn.prepareStatement(sql5);
-			int count5;
 			// for each문으로 한꺼번에 다 넣기.
 			for(OrderBookVo obvo : result) {
 				//4-5. 값 바인딩.
-				count5 = 0;
 				pstmt.setInt(1, obvo.getBook_no());
 				pstmt.setInt(2, obvo.getOrder_no());
 				pstmt.setInt(3, obvo.getQuntity());
 				pstmt.setInt(4, obvo.getPrice());
 			
 				//5-5. SQL 실행.(order book)
-				count5 = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				
 				//6-5. 결과 실행 
 //				System.out.println("orderBookUpate: "+ (count5 == 1));
 			}
+			
+			// 3-6. SQL 준비(주문완료 후 cart 책 내역 삭제.)
+			String sql6 =
+					"DELETE FROM cart WHERE member_no = ?;";
+			pstmt = conn.prepareStatement(sql6);
+			// 4-6 값 바인딩.
+			pstmt.setInt(1, vo.getMember_no());
+			// 5-6 SQL 실행.
+			pstmt.executeUpdate();
+			
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패:" + e);
@@ -314,11 +323,12 @@ public class OrderDao {
 			
 			//3. SQL 준비
 			String sql2 =
-				"select a.no, c.title, c.price, b.quntity, (c.price*b.quntity), a.name "+
-				"from orders a, cart b, book c " +
-				"where a.member_no = b.member_no " +
-				"and b.book_no = c.no "+
-				"and a.member_no = ?";
+				"select b.no, b.name, c.title, a.price, a.quntity,  (a.price*a.quntity) "+
+				"from order_book a, orders b, book c "+
+				"where a.order_no = b.no "+
+				"and a.book_no = c.no "+
+				"and b.member_no = ? "+
+				"order by b.no asc";
 			pstmt = conn.prepareStatement(sql2);
 			
 			//4. binding
@@ -331,11 +341,12 @@ public class OrderDao {
 			while(rs.next()) {
 				OrderBookVo obvo = new OrderBookVo();
 				obvo.setOrder_no(rs.getInt(1));
-				obvo.setBookName(rs.getString(2));
-				obvo.setPrice(rs.getInt(3));
-				obvo.setQuntity(rs.getInt(4));
-				obvo.setPrice_mul_quntity(rs.getInt(5));
-				obvo.setMemberName(rs.getString(6));
+				obvo.setMemberName(rs.getString(2));
+				obvo.setBookName(rs.getString(3));
+				obvo.setPrice(rs.getInt(4));
+				obvo.setQuntity(rs.getInt(5));
+				obvo.setPrice_mul_quntity(rs.getInt(6));
+				
 				
 				result.add(obvo);
 			}
