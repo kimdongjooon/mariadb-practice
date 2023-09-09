@@ -55,8 +55,8 @@ public class OrderVo {
 	}
 	@Override
 	public String toString() {
-		return "| no=" + no + ", total_price=" + total_price + ", name=" + name
-				+ ", email=" + email + ", address=" + address + " |";
+		return "| 주문번호: " + no + ", 주문자(" + name
+				+ "/"+email+")"+ ", 결제금액: " + total_price +", 배송지: " + address + " |";
 	}
 
 	

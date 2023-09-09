@@ -46,7 +46,7 @@ public class BookVo {
 	}
 	@Override
 	public String toString() {
-		return "| no=" + no + ", title=" + title + ", price=" + price + ", category=" + category_str + " |";
+		return "| " + "제목: " + title + ", 가격: " + price + " |";
 	}
 	
 	

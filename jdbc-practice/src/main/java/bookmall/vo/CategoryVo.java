@@ -23,6 +23,6 @@ public class CategoryVo {
 
 	@Override
 	public String toString() {
-		return "| no=" + no + ", category=" + category + " |";
+		return "| no: " + no + ", 카테고리: " + category + " |";
 	}
 }

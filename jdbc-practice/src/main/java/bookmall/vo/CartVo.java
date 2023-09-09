@@ -76,8 +76,12 @@ public class CartVo {
 	}
 	@Override
 	public String toString() {
-		return "| no=" + no + ", category=" + category + ", title=" + title + ", quntity=" + quntity + ", price="
-				+ price + ", total_price=" + total_price + " |";
+		return "| " + 
+			   "도서 제목: " + title + 
+			   ", 수량: " + quntity + 
+			   ", 가격: " + price + 
+			   ", 총 가격: " + total_price + 
+			   " |";
 	}
 	
 	

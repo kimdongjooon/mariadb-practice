@@ -48,8 +48,12 @@ public class MemberVo {
 	}
 	@Override
 	public String toString() {
-		return "| no: " + no + " , name: " + name + " , email: " + email + " , password: " + password + " , tel: " + tel
-				+ " |";
+		return "| " + 
+				"이름: " + name + 
+				" , 전화번호: " + tel+ 
+				" , 이메일: " + email + 
+				" , 비밀번호: " + password + 
+				" |";
 	}
 	
 	

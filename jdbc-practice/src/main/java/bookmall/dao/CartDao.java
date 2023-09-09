@@ -58,7 +58,7 @@ public class CartDao {
 			int count = pstmt.executeUpdate();
 			
 			//6. 결과 처리.
-			System.out.println("cartUpate: "+ (count == 1));
+//			System.out.println("cartUpate: "+ (count == 1));
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패:" + e);
