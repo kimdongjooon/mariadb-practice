@@ -21,7 +21,7 @@ public class BookMall {
 		MemberVo memberVo1 = new MemberVo("홍길동","hong@google.com","1234","010-1111-2222");
 		MemberVo memberVo2 = new MemberVo("성춘향","sung@gmail.com","5678","010-5475-4444");
 		memberDao.insert(memberVo1);
-		memberDao.insert(memberVo2);
+		memberDao.insert(memberVo2) ;
 
 		System.out.println("## 회원리스트");
 		

@@ -62,7 +62,9 @@ order by a.no;
 ALTER TABLE member AUTO_INCREMENT = 0;
 DELETE FROM member WHERE no <=10;
 
-select * from member;
+select * 
+from member
+where email = 'hong@google.com';
 insert into member value(null,'홍길동','홍길동11@naver.com','1234','010-1111-2222');
 insert into member value(null,'성춘향','성춘향22@gmail.com','4323','010-5475-4444');
 select * from member;
@@ -84,9 +86,7 @@ where a.no = b.book_no
 and a.category_no = c.no
 ;
 -- select 
-select no
-from member
-where email = 'hong@google.com';
+select no from member where email = 'hong@google.com';
 
 
 -- 

@@ -78,7 +78,7 @@ public class BookDao {
 		boolean result = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+		ResultSet rs = null;
 		try {
 			//1. JDBC Driver Class 로딩
 			Class.forName("org.mariadb.jdbc.Driver");
@@ -86,27 +86,37 @@ public class BookDao {
 			//2. 연결하기
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
-
-			//3. sql준비.
 			
-			String sql =
-					"insert" +
-				    " into book" +
-					" values (null, ?,?,?)";
-			pstmt = conn.prepareStatement(sql);
-			
-			//4. 값 바인딩.
+			//3. sql(email 중복 확인.) - email이 같을 때 필터하기.
+			String sql1 =
+					"select * "+
+					"from book "+
+					"where title = ?";
+			pstmt = conn.prepareStatement(sql1);
 			pstmt.setString(1, vo.getTitle());
-			pstmt.setInt(2, vo.getPrice());
-			pstmt.setInt(3, vo.getCategory_no());
-			
-			
-			//5. SQL 실행.
-			int count = pstmt.executeUpdate();
-			
-			//6. 결과 처리.
-			result = count == 1;
-			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				System.out.println("현재 존재하는 책입니다.");
+			}else {
+				//3. sql준비.
+				String sql =
+						"insert" +
+					    " into book" +
+						" values (null, ?,?,?)";
+				pstmt = conn.prepareStatement(sql);
+				
+				//4. 값 바인딩.
+				pstmt.setString(1, vo.getTitle());
+				pstmt.setInt(2, vo.getPrice());
+				pstmt.setInt(3, vo.getCategory_no());
+				
+				
+				//5. SQL 실행.
+				int count = pstmt.executeUpdate();
+				
+				//6. 결과 처리.
+				result = count == 1;
+			}
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패:" + e);
 		} catch (SQLException e) {

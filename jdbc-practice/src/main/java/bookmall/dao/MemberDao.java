@@ -16,6 +16,7 @@ public class MemberDao {
 		boolean result = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		
 		try {
 			//1. JDBC Driver Class 로딩
@@ -24,27 +25,37 @@ public class MemberDao {
 			//2. 연결하기
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
-
-			//3. sql준비.
 			
-			String sql =
-					"insert" +
-				    " into member" +
-					" values (null, ?,?,?,?)";
-			pstmt = conn.prepareStatement(sql);
-			
-			//4. 값 바인딩.
-			pstmt.setString(1, vo.getName());
-			pstmt.setString(2, vo.getEmail());
-			pstmt.setString(3, vo.getPassword());
-			pstmt.setString(4, vo.getTel());
-			
-			//5. SQL 실행.
-			int count = pstmt.executeUpdate();
+			//3. sql(email 중복 확인.) - email이 같을 때 필터하기.
+			String sql1 =
+					"select * "+
+					"from member "+
+					"where email = ?";
+			pstmt = conn.prepareStatement(sql1);
+			pstmt.setString(1, vo.getEmail());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				System.out.println("현재 존재하는 계정입니다.");
+			}else {
+				//3-1. sql(insert). 중복이 없을때.
+				String sql2 =
+						"insert" +
+					    " into member" +
+						" values (null, ?,?,?,?)";
+				pstmt = conn.prepareStatement(sql2);
+				
+				//4. 값 바인딩.
+				pstmt.setString(1, vo.getName());
+				pstmt.setString(2, vo.getEmail());
+				pstmt.setString(3, vo.getPassword());
+				pstmt.setString(4, vo.getTel());
+				
+				//5. SQL 실행.
+				int count = pstmt.executeUpdate();
 			
 			//6. 결과 처리.
 //			if(result = count == 1) {System.out.println(vo.getName()+"님 회원가입완료.");};
-			
+			}
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패:" + e);
 		} catch (SQLException e) {
