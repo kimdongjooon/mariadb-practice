@@ -39,7 +39,7 @@ public class OrderDao {
 			String url = "jdbc:mariadb://192.168.64.3:3307/bookmall?charset=utf8";
 			conn = DriverManager.getConnection(url, "bookmall", "bookmall");
 			
-			//3-1.멤버 email 받아서 no 뽑아서 가져와서 변수 저장하기
+			//3-0.멤버 email 받아서 no 뽑아서 가져와서 변수 저장하기
 			String sql0=
 					"select no from member where email = ?";
 			pstmt = conn.prepareStatement(sql0);
@@ -123,14 +123,13 @@ public class OrderDao {
 			pstmt.close();
 			rs.close();
 			
-			//3-4. SQL 준비(quntity, price 가져와서 변수 저장하기)
+			//3-4. SQL 준비(주문 테이블 최신 no 가져오기)
 			String sql4 =
-				"select a.no, d.no, c.quntity, d.price "+
-				"from orders a, member b, cart c, book d "+
-				"where a.member_no = b.no "+
-				"and b.no = c.member_no "+
-				"and c.book_no = d.no "+
-				"and a.member_no = ?";
+				"select no " +
+				"from orders "+
+				"where member_no = ? " +
+				"order by no desc "+
+				"limit 1";
 			pstmt = conn.prepareStatement(sql4);
 			
 			//4-4. binding
@@ -140,7 +139,33 @@ public class OrderDao {
 			rs = pstmt.executeQuery();
 			
 			
-			//6-4. 결과 처리
+			//6-4. 결과 처리 넘버 무조건 1개.
+			if(rs.next()) {
+				vo.setNo(rs.getInt(1));
+			}
+			pstmt.close();
+			rs.close(); 
+			
+			//3-5. SQL 준비(quntity, price 가져와서 변수 저장하기)
+			String sql5 =
+				"select a.no, d.no, c.quntity, d.price "+
+				"from orders a, member b, cart c, book d "+
+				"where a.member_no = b.no "+
+				"and b.no = c.member_no "+
+				"and c.book_no = d.no "+
+				"and a.member_no = ? " +
+				"and a.no = ?";
+			pstmt = conn.prepareStatement(sql5);
+			
+			//4-5. binding
+			pstmt.setInt(1, vo.getMember_no());
+			pstmt.setInt(2, vo.getNo());
+			
+			//5-5. SQL 실행
+			rs = pstmt.executeQuery();
+			
+			
+			//6-5. 결과 처리
 			while(rs.next()) {
 				OrderBookVo obvo =new OrderBookVo();
 				obvo.setOrder_no(rs.getInt(1));
@@ -154,32 +179,32 @@ public class OrderDao {
 			pstmt.close();
 			rs.close();
 			
-			// 3-5. SQL 준비(orders_book insert 하기)
-			String sql5 =
+			// 3-6. SQL 준비(orders_book insert 하기)
+			String sql6 =
 					"insert into order_book values(?,?,?,?,null)";
-			pstmt = conn.prepareStatement(sql5);
+			pstmt = conn.prepareStatement(sql6);
 			// for each문으로 한꺼번에 다 넣기.
 			for(OrderBookVo obvo : result) {
-				//4-5. 값 바인딩.
+				//4-6. 값 바인딩.
 				pstmt.setInt(1, obvo.getBook_no());
 				pstmt.setInt(2, obvo.getOrder_no());
 				pstmt.setInt(3, obvo.getQuntity());
 				pstmt.setInt(4, obvo.getPrice());
 			
-				//5-5. SQL 실행.(order book)
+				//5-6. SQL 실행.(order book)
 				pstmt.executeUpdate();
 				
-				//6-5. 결과 실행 
+				//6-6. 결과 실행 
 //				System.out.println("orderBookUpate: "+ (count5 == 1));
 			}
 			
-			// 3-6. SQL 준비(주문완료 후 cart 책 내역 삭제.)
-			String sql6 =
+			// 3-7. SQL 준비(주문완료 후 cart 책 내역 삭제.)
+			String sql7 =
 					"DELETE FROM cart WHERE member_no = ?;";
-			pstmt = conn.prepareStatement(sql6);
-			// 4-6 값 바인딩.
+			pstmt = conn.prepareStatement(sql7);
+			// 4-7 값 바인딩.
 			pstmt.setInt(1, vo.getMember_no());
-			// 5-6 SQL 실행.
+			// 5-7 SQL 실행.
 			pstmt.executeUpdate();
 			
 			
@@ -189,7 +214,7 @@ public class OrderDao {
 			System.out.println("error:" + e);
 		} finally {
 			try {
-				// 6. 자원정리
+				// 7. 자원정리
 				if(rs != null) {
 					rs.close();
 				}
