@@ -1,7 +1,7 @@
 use webdb;
 SELECT * FROM board;
 
-
+select max(g_no) from board;
 -- insert
 insert 
 into board 
@@ -26,7 +26,7 @@ from board a, user b
 where a.user_no = b.no
 and a.title like '%%'
 order by g_no DESC, o_no ASC
--- limit 0,5
+limit 0,5 
 ;
 
 -- boardFindByNo
